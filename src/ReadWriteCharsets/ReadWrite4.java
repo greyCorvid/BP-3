@@ -1,3 +1,9 @@
+package ReadWriteCharsets;
+
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+
 //**Чтение и запись файлов в разных кодировках**
 //
 //1
@@ -7,7 +13,7 @@
 // 2
 // Запишите текст в файлы
 // text_utf8.txt, text_win1251.txt, text_koi8r.txt
-//в соответствующих кодировках.
+// в соответствующих кодировках.
 //
 // 3
 // Прочитать каждый файл побайтово
@@ -31,5 +37,22 @@ public class ReadWrite4 {
     public static void main(String[] args) {
         String text = "Ржится рожь, овёс овсится, чечевица чечевится";
 
+        try(Writer out = new OutputStreamWriter(new FileOutputStream("./src/ReadWriteCharsets/text_utf8.txt"), "utf-8")) {
+            out.write(text);
+        } catch (Exception e) {
+            System.out.println("error");
+        }
+
+        try(Writer out = new OutputStreamWriter(new FileOutputStream("./src/ReadWriteCharsets/text_win1251.txt"), "windows-1251")) {
+            out.write(text);
+        } catch (Exception e) {
+            System.out.println("error");
+        }
+
+        try(Writer out = new OutputStreamWriter(new FileOutputStream("./src/ReadWriteCharsets/text_koi8r.txt"), "KOI8-r")) {
+            out.write(text);
+        } catch (Exception e) {
+            System.out.println("error");
+        }
     }
 }

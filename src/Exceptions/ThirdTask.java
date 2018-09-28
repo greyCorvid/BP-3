@@ -35,8 +35,8 @@ public class ThirdTask {
         int i = 1;
         for (String fileName : fileNames) {
             try {
-                Path currentFile = new File("C:\\Users\\Chris\\Google Диск\\Uni\\BP-3\\src\\Exceptions\\" + fileName).toPath();
-                Path newFile = new File("C:\\Users\\Chris\\Google Диск\\Uni\\BP-3\\src\\Exceptions\\" + i + fileName).toPath();
+                Path currentFile = new File("./src/Exceptions/" + fileName).toPath();
+                Path newFile = new File("./src/Exceptions/" + i + fileName).toPath();
                 Path newFilePath = Files.move(currentFile, newFile, REPLACE_EXISTING);
                 newFiles.add(newFilePath.getName(newFilePath.getNameCount() - 1).toString());
             } catch (java.nio.file.DirectoryNotEmptyException e) {
