@@ -1,34 +1,51 @@
 package Exceptions;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-//Дан список имён файлов List<String>,
-// переименовать все файлы в списке,
-// a.txt -> 0a.txt, b.txt ->1b.txt
-//file.move
-//file.rename
-//Нужно написать подробную обработку ошибок
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
+//Дан список имен файлов.
+// Предполагается, что эти файлы лежат в одном заранее выбранном вами каталоге.
+// Нужно переименовать каждый файл так,
+// чтобы в начало к нему был приписан номер файла в списке.
+// Например, если был список a.txt, b.txt,
+// то нужно переименовать файлы в 1 a.txt и 2 b.txt.
+// Для каждого файла выведите, удалось ли его переименовать,
+// а если нет, то что именно пошло не так.
+// Проследите, чтобы не выводилось лишней информации об ошибках
+// наподобие содержимого стека.
+// Используйте метод Files.move().
 public class ThirdTask {
     public static void main(String[] args) {
         List<String> myFiles = new ArrayList<>();
         myFiles.add("a.txt");
         myFiles.add("b.txt");
 //        myFiles.add("");
-        renameFiles(myFiles);
+        System.out.println(renameFiles(myFiles));
     }
 
-    private static void renameFiles(List<String> fileNames) {
+    private static List<String> renameFiles(List<String> fileNames) {
         List<String> newFiles = new ArrayList<>();
-        int i = 0;
+        int i = 1;
         for (String fileName : fileNames) {
             try {
-                new File currentFile =
-            } catch (Exception e) {
-                System.out.println("");
+                Path currentFile = new File(fileName).toPath();
+                Path newFile = new File(i + fileName).toPath();
+                Path newFilePath = Files.move(currentFile, newFile, REPLACE_EXISTING);
+                newFiles.add(newFilePath.getName(newFilePath.getNameCount() - 1).toString());
+            } catch (java.nio.file.DirectoryNotEmptyException e) {
+                System.out.println("Директория с нужным именем существует и не пуста");
+            } catch (SecurityException e) {
+                System.out.println("Доступа к файлам нет");
+            } catch (java.io.IOException e) {
+                System.out.println("Ошибка записи или чтения");
             }
             i++;
         }
+        return newFiles;
     }
 }
