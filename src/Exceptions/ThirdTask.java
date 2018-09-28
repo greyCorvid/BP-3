@@ -25,7 +25,9 @@ public class ThirdTask {
         myFiles.add("a.txt");
         myFiles.add("b.txt");
 //        myFiles.add("");
-        System.out.println(renameFiles(myFiles));
+        for (String file : renameFiles(myFiles)) {
+            System.out.println(file);
+        }
     }
 
     private static List<String> renameFiles(List<String> fileNames) {
@@ -33,16 +35,16 @@ public class ThirdTask {
         int i = 1;
         for (String fileName : fileNames) {
             try {
-                Path currentFile = new File(fileName).toPath();
-                Path newFile = new File(i + fileName).toPath();
+                Path currentFile = new File("C:\\Users\\Chris\\Google Диск\\Uni\\BP-3\\src\\Exceptions\\" + fileName).toPath();
+                Path newFile = new File("C:\\Users\\Chris\\Google Диск\\Uni\\BP-3\\src\\Exceptions\\" + i + fileName).toPath();
                 Path newFilePath = Files.move(currentFile, newFile, REPLACE_EXISTING);
                 newFiles.add(newFilePath.getName(newFilePath.getNameCount() - 1).toString());
             } catch (java.nio.file.DirectoryNotEmptyException e) {
-                System.out.println("Директория с нужным именем существует и не пуста");
+                System.out.println("Директория с нужным именем существует и не пуста, " + fileName);
             } catch (SecurityException e) {
-                System.out.println("Доступа к файлам нет");
+                System.out.println("Доступа к файлу нет, " + fileName);
             } catch (java.io.IOException e) {
-                System.out.println("Ошибка записи или чтения");
+                System.out.println("Ошибка записи или чтения, " + fileName);
             }
             i++;
         }
