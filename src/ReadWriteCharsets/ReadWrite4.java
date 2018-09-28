@@ -37,19 +37,13 @@ public class ReadWrite4 {
     public static void main(String[] args) {
         String text = "Ржится рожь, овёс овсится, чечевица чечевится";
 
-        try(Writer out = new OutputStreamWriter(new FileOutputStream("./src/ReadWriteCharsets/text_utf8.txt"), "utf-8")) {
-            out.write(text);
-        } catch (Exception e) {
-            System.out.println("error");
-        }
+        write_text(text, "./src/ReadWriteCharsets/text_utf8.txt", "utf-8");
+        write_text(text, "./src/ReadWriteCharsets/text_win1251.txt", "windows-1251");
+        write_text(text, "./src/ReadWriteCharsets/text_koi8r.txt", "KOI8-R");
+    }
 
-        try(Writer out = new OutputStreamWriter(new FileOutputStream("./src/ReadWriteCharsets/text_win1251.txt"), "windows-1251")) {
-            out.write(text);
-        } catch (Exception e) {
-            System.out.println("error");
-        }
-
-        try(Writer out = new OutputStreamWriter(new FileOutputStream("./src/ReadWriteCharsets/text_koi8r.txt"), "KOI8-r")) {
+    private static void write_text(String text, String filePath, String charset) {
+        try(Writer out = new OutputStreamWriter(new FileOutputStream(filePath), charset)) {
             out.write(text);
         } catch (Exception e) {
             System.out.println("error");
