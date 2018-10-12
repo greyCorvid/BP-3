@@ -1,8 +1,8 @@
 package Exceptions;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +35,8 @@ public class ThirdTask {
         int i = 1;
         for (String fileName : fileNames) {
             try {
-                Path currentFile = new File("./src/Exceptions/" + fileName).toPath();
-                Path newFile = new File("./src/Exceptions/" + i + fileName).toPath();
+                Path currentFile = Paths.get("./files/Exceptions", fileName);
+                Path newFile = Paths.get("./files/Exceptions", Integer.toString(i) + fileName);
                 Path newFilePath = Files.move(currentFile, newFile, REPLACE_EXISTING);
                 newFiles.add(newFilePath.getName(newFilePath.getNameCount() - 1).toString());
             } catch (java.nio.file.DirectoryNotEmptyException e) {

@@ -1,10 +1,10 @@
 package ReadWriteCharsets;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 //**Чтение и запись файлов в разных кодировках**
 //
@@ -42,39 +42,40 @@ public class ReadWrite4 {
         String utf = "text_utf8";
         String win = "text_win1251";
         String koi = "text_koi8r";
-        write_text(text, utf, "utf-8");
-        write_text(text, win, "windows-1251");
-        write_text(text, koi, "KOI8-R");
+        writeText(text, utf, "utf-8");
+        writeText(text, win, "windows-1251");
+        writeText(text, koi, "KOI8-R");
 
-        write_bytes(utf);
-        write_bytes(win);
-        write_bytes(koi);
+        writeBytes(utf);
+        writeBytes(win);
+        writeBytes(koi);
     }
 
-    private static void write_text(String text, String fileName, String charset) {
-        try(Writer out = new OutputStreamWriter(new FileOutputStream("./src/ReadWriteCharsets/" + fileName + ".txt"), charset)) {
+    private static void writeText(String text, String fileName, String charset) {
+        try(Writer out = new OutputStreamWriter(new FileOutputStream("./files/ReadWriteCharsets/" + fileName + ".txt"), charset)) {
             out.write(text);
         } catch (Exception e) {
             System.out.println("error");
         }
     }
 
-    private static void write_bytes(String fileName) {
+    private static void writeBytes(String fileName) {
         try {
-            byte[] allBytes = Files.readAllBytes(new File("./src/ReadWriteCharsets/" + fileName + ".txt").toPath());
-
-                try(Writer out = new OutputStreamWriter(new FileOutputStream("./src/ReadWriteCharsets/" + fileName + ".bin"))) {
+            byte[] allBytes = Files.readAllBytes(Paths.get("./files/ReadWriteCharsets", fileName + ".txt"));
+                try(Writer out = new OutputStreamWriter(new FileOutputStream("./files/ReadWriteCharsets/" + fileName + ".bin"), "utf-8")) {
                     for (byte allByte : allBytes) {
-                        out.write(allByte);
+                        out.write(Byte.hashCode(allByte));
                         out.write(" ");
-                        System.out.println(allByte);
+                        System.out.println(Byte.hashCode(allByte));
                     }
                 } catch (Exception e) {
                     System.out.println("error");
+                    System.out.println(e + "\n");
                 }
             System.out.println();
         } catch (Exception e) {
             System.out.println("error");
+            System.out.println(e + "\n");
         }
 
     }
