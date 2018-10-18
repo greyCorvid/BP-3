@@ -49,6 +49,8 @@ public class ReadWrite4 {
         writeBytes(utf);
         writeBytes(win);
         writeBytes(koi);
+
+        writeKoi7(koi);
     }
 
     private static void writeText(String text, String fileName, String charset) {
@@ -64,14 +66,38 @@ public class ReadWrite4 {
             byte[] allBytes = Files.readAllBytes(Paths.get("./files/ReadWriteCharsets", fileName + ".txt"));
                 try(Writer out = new OutputStreamWriter(new FileOutputStream("./files/ReadWriteCharsets/" + fileName + ".bin"), "utf-8")) {
                     for (byte allByte : allBytes) {
-                        out.write(Byte.hashCode(allByte));
+                        //избавляемся от доп кода
+                        int bb = allByte < 0?256 + allByte : allByte;
+                        //Ещё способ out.write(Integer.toString(bb, 16));
+                        //и на сайте hexed.it именно это и выведено
+                        out.write(allByte + " " + bb + " " + Integer.toString(bb, 16));
                         out.write(" ");
-                        System.out.println(Byte.hashCode(allByte));
+                        System.out.println(allByte + " " + bb + " " + Integer.toString(bb, 16));
                     }
                 } catch (Exception e) {
                     System.out.println("error");
                     System.out.println(e + "\n");
                 }
+            System.out.println();
+        } catch (Exception e) {
+            System.out.println("error");
+            System.out.println(e + "\n");
+        }
+    }
+
+    private static void writeKoi7(String fileName) {
+        try {
+            byte[] allBytes = Files.readAllBytes(Paths.get("./files/ReadWriteCharsets", fileName + ".txt"));
+            try(Writer out = new OutputStreamWriter(new FileOutputStream("./files/ReadWriteCharsets/text_koi7r.txt"))) {
+                for (byte allByte : allBytes) {
+//                    byte b = Byte.hashCode(allByte) < 0?128 + Byte.hashCode(allByte) : allByte;
+//                    out.write(b + " ");
+                    System.out.println(allByte);
+                }
+            } catch (Exception e) {
+                System.out.println("error");
+                System.out.println(e + "\n");
+            }
             System.out.println();
         } catch (Exception e) {
             System.out.println("error");
