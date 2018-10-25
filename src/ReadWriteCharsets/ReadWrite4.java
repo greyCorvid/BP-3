@@ -90,9 +90,9 @@ public class ReadWrite4 {
             byte[] allBytes = Files.readAllBytes(Paths.get("./files/ReadWriteCharsets", fileName + ".txt"));
             try(Writer out = new OutputStreamWriter(new FileOutputStream("./files/ReadWriteCharsets/text_koi7r.txt"))) {
                 for (byte allByte : allBytes) {
-//                    byte b = Byte.hashCode(allByte) < 0?128 + Byte.hashCode(allByte) : allByte;
-//                    out.write(b + " ");
-                    System.out.println(allByte);
+                    int b = allByte < 0?allByte + 128: allByte;
+                    out.write(b);
+                    System.out.println(allByte + " " + b);
                 }
             } catch (Exception e) {
                 System.out.println("error");

@@ -1,6 +1,12 @@
 package JavaFX;
-
+//Создайте интерфейс мессенджера, который мы обсудили на паре.
+//Добавьте в список контактов несколько человек,
+// научите кнопку посылать сообщение в историю сообщений,
+// запретите изменения в истории сообщений
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -11,11 +17,17 @@ import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
 public class GridPaneExample extends Application{
+
+    private Button send;
+    private TextField message;
+    private TextArea history;
+
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Different Panes");
+        primaryStage.setTitle("Messenger");
         Parent root = initInterface();
         primaryStage.setScene(new Scene(root));
+        initInteraction();
         primaryStage.show();
     }
 
@@ -23,11 +35,18 @@ public class GridPaneExample extends Application{
         //реализуем интерфейс мессенджера с помощью GridPaneExample (который в Panes сделали)
         GridPane root = new GridPane();
 
-        TextArea history = new TextArea();
-        TextField message = new TextField();
-        Button send = new Button("Send");
+        history = new TextArea();
+        message = new TextField();
+        send = new Button("Send");
         Label contactLabel = new Label("Контакты");
-        ListView<String> contacts = new ListView<>();
+
+        //text are not editable
+        history.setEditable(false);
+
+        //задаю имена в список контактов
+        ObservableList<String> names = FXCollections.observableArrayList(
+                "Julia", "Ian", "Sue", "Matthew", "Hannah", "Stephan", "Denise");
+        ListView<String> contacts = new ListView<>(names);
 
         //можно constraint указать традиционно
         GridPane.setColumnIndex(history, 0);
@@ -67,6 +86,18 @@ public class GridPaneExample extends Application{
         contacts.setPrefSize(200, 0);
 
         return root;
+    }
+
+    private void initInteraction() {
+//        send.setOnAction(a -> history.appendText(message.getText() + "\n"));
+        send.addEventHandler(
+                ActionEvent.ACTION,
+                a -> history.appendText(message.getText() + "\n")
+        );
+        send.addEventHandler(
+                ActionEvent.ACTION,
+                a -> message.setText("")
+        );
     }
 }
 
