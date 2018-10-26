@@ -29,6 +29,8 @@ package JavaFX;
 //Свяжите цвет из второго ColorPicker c цветом фона.
 
 import javafx.application.Application;
+import javafx.beans.binding.Binding;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -56,9 +58,13 @@ public class ColorfulCircle extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        //чтобы окно очень маленьким не было
+        primaryStage.setMinWidth(400);
+        primaryStage.setMinHeight(225);
+
         primaryStage.setTitle("Color The Circle!");
         Parent root = initInterface();
-        primaryStage.setScene(new Scene(root));
+        primaryStage.setScene(new Scene(root, 640, 480));
         initInteraction(); //метод для поведений элементов интерфейса, делаем чтоб разделять для удобства
         primaryStage.show();
     }
@@ -67,8 +73,10 @@ public class ColorfulCircle extends Application {
         HBox root = new HBox();
         VBox left = new VBox();
 
+        left.setMinHeight(200);
         left.setMinWidth(300);
-
+        left.setSpacing(5);
+        HBox.setMargin(left, new Insets(5, 5, 5, 5));
 
         //Left:
         Label sliderL = new Label("Choose size of the circle");
@@ -77,11 +85,17 @@ public class ColorfulCircle extends Application {
         slider = new Slider();
         colorBg = new ColorPicker();
         color = new ColorPicker();
+
         color.setValue(Color.BLACK);
 
         //Right:
         bg = new Pane();
         circle = new Circle();
+
+        HBox.setMargin(bg, new Insets(5, 5, 5, 0));
+        HBox.setHgrow(bg, Priority.ALWAYS);
+        bg.setMaxWidth(Double.MAX_VALUE);
+        bg.setMaxHeight(Double.MAX_VALUE);
         bg.setBackground(
                 new Background(
                         new BackgroundFill(
@@ -92,18 +106,44 @@ public class ColorfulCircle extends Application {
                 )
         );
 
-
         root.getChildren().addAll(left, bg);
         left.getChildren().addAll(sliderL, slider, colorBgL, colorBg, colorL, color);
         bg.getChildren().addAll(circle);
-
-        left.setSpacing(5);
-        HBox.setMargin(left,new Insets(5, 5, 5, 5));
-        HBox.setMargin(bg,new Insets(5, 5, 5, 0));
         return root;
     }
 
     private void initInteraction() {
+        //Связывание колорпикера и цвета круга
         circle.fillProperty().bind(color.valueProperty());
+
+        //Связывание слайдера с радиусом круга
+        circle.radiusProperty().bind(slider.valueProperty());
+
+        //Связывание колорпикера и цвета фона
+        bg.backgroundProperty().bind(
+                Bindings.createObjectBinding(
+                        () -> new Background(
+                                new BackgroundFill(
+                                        colorBg.getValue(),
+                                        new CornerRadii(0),
+                                        Insets.EMPTY
+                                )
+                        ),
+                        colorBg.valueProperty()
+                )
+        );
+
+        //Связывание координат круга с половиной высоты и ширины фона (центрирование круга)
+        circle.centerXProperty().bind(
+                Bindings.divide(bg.widthProperty(), 2)
+        );
+        circle.centerYProperty().bind(
+                Bindings.divide(bg.heightProperty(), 2)
+        );
+
+        //Максимальное значение слайдера - максимальный размер круга
+        slider.maxProperty().bind(
+                Bindings.divide(Bindings.min(bg.widthProperty(), bg.heightProperty()), 2)
+        );
     }
 }
