@@ -1,4 +1,4 @@
-package JavaFX;
+package javafxexamples;
 //Создайте интерфейс мессенджера, который мы обсудили на паре.
 //Добавьте в список контактов несколько человек,
 // научите кнопку посылать сообщение в историю сообщений,
@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -89,15 +90,18 @@ public class GridPaneExample extends Application{
     }
 
     private void initInteraction() {
-//        send.setOnAction(a -> history.appendText(message.getText() + "\n"));
-        send.addEventHandler(
-                ActionEvent.ACTION,
-                a -> history.appendText(message.getText() + "\n")
-        );
-        send.addEventHandler(
-                ActionEvent.ACTION,
-                a -> message.setText("")
-        );
+        EventHandler<ActionEvent> sendAction = a -> {
+            String text = message.getText();
+            if (text.trim().isEmpty())
+                return;
+
+            history.appendText(text + "\n");
+            message.setText("");
+            message.requestFocus();
+        };
+
+        send.setOnAction(sendAction);
+        message.setOnAction(sendAction);
     }
 }
 

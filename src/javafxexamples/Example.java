@@ -1,4 +1,4 @@
-package JavaFX;
+package javafxexamples;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -20,7 +20,7 @@ public class Example extends Application {
     @Override
     public void start(Stage primaryStage) {
         //задаём тайтл
-        primaryStage.setTitle("Hello World JavaFX Application");
+        primaryStage.setTitle("Hello World javafxexamples Application");
 
         Parent root = initInterface();
         //задаём сцену, сцена содержит информацию о парент

@@ -1,4 +1,4 @@
-package ReadWriteCharsets;
+package readwritecharsets;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -54,7 +54,7 @@ public class ReadWrite4 {
     }
 
     private static void writeText(String text, String fileName, String charset) {
-        try (Writer out = new OutputStreamWriter(new FileOutputStream("./files/ReadWriteCharsets/" + fileName + ".txt"), charset)) {
+        try (Writer out = new OutputStreamWriter(new FileOutputStream("./files/readwritecharsets/" + fileName + ".txt"), charset)) {
             out.write(text);
         } catch (Exception e) {
             System.out.println("error");
@@ -62,8 +62,8 @@ public class ReadWrite4 {
     }
 
     private static void writeBytes(String fileName) {
-        try (Writer out = new OutputStreamWriter(new FileOutputStream("./files/ReadWriteCharsets/" + fileName + ".bin"), "utf-8")) {
-            byte[] allBytes = Files.readAllBytes(Paths.get("./files/ReadWriteCharsets", fileName + ".txt"));
+        try (Writer out = new OutputStreamWriter(new FileOutputStream("./files/readwritecharsets/" + fileName + ".bin"), "utf-8")) {
+            byte[] allBytes = Files.readAllBytes(Paths.get("./files/readwritecharsets", fileName + ".txt"));
 
             for (byte b : allBytes) {
                 //избавляемся от доп кода
@@ -85,8 +85,8 @@ public class ReadWrite4 {
     }
 
     private static void writeKoi7(String fileName) {
-        try (Writer out = new OutputStreamWriter(new FileOutputStream("./files/ReadWriteCharsets/text_koi7r.txt"))) {
-            byte[] allBytes = Files.readAllBytes(Paths.get("./files/ReadWriteCharsets", fileName + ".txt"));
+        try (Writer out = new OutputStreamWriter(new FileOutputStream("./files/readwritecharsets/text_koi7r.txt"))) {
+            byte[] allBytes = Files.readAllBytes(Paths.get("./files/readwritecharsets", fileName + ".txt"));
             for (byte allByte : allBytes) {
                 int b = allByte < 0 ? allByte + 128 : allByte;
                 out.write(b);

@@ -2,7 +2,7 @@
 java course 3 semester
 это наша работа в семестре вот
 вот первая программа по исключениям
-package Exceptions;
+package exceptions;
 
 ```
 public class FirstTask {

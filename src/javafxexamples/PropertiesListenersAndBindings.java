@@ -1,4 +1,4 @@
-package JavaFX;
+package javafxexamples;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -79,7 +79,7 @@ public class PropertiesListenersAndBindings extends Application {
         //-------------Пример 1-----------------
         //кнопочку учим делать всякое
         //универсальный но сложный способ:
-        //В JavaFX реализована работа с событиями.
+        //В javafxexamples реализована работа с событиями.
         //Разные объекты генерируют события
         //Можно добавлять слушателей(обработиков то есть хендлерво)
         //они реагируют на интересующие их события

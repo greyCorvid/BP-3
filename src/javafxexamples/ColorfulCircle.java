@@ -1,4 +1,4 @@
-package JavaFX;
+package javafxexamples;
 //Реализуйте программу,
 // которая показывает на экране круг и
 // дает возможность изменять его размер, цвет и т.п.
@@ -29,7 +29,6 @@ package JavaFX;
 //Свяжите цвет из второго ColorPicker c цветом фона.
 
 import javafx.application.Application;
-import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
