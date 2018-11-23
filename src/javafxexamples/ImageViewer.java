@@ -36,7 +36,6 @@
 package javafxexamples;
 
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
@@ -46,13 +45,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,16 +59,43 @@ public class ImageViewer extends Application{
     private VBox right;
     private ListView<File> fileListView;
     private HBox search;
-    private TextField tf;
+    private TextField pacNameField;
     private Button button;
     private Pane bg;
     private ImageView image;
+    final private DirectoryChooser dc = new DirectoryChooser();
+    private File imagePackageFile;
 
     @Override
     public void start(Stage primaryStage) {
         //чтобы окно очень маленьким не было
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(225);
+
+//        //Выбор папки
+//        button.setOnAction(
+//                a -> {
+//                    dc.setInitialDirectory(dc.showDialog(primaryStage));
+//                    pacNameField.setText(dc.getInitialDirectory().getPath());
+//                    imagePackageFile = new File(dc.getInitialDirectory().getPath());
+//
+//                    ObservableList<File> listOfImages = FXCollections.observableArrayList();
+//                    Pattern imagePattern = Pattern.compile(".+\\.(jpeg|jpg|gif|png|bmp|wbmp)");
+//                    for (File file : Objects.requireNonNull(imagePackageFile.listFiles())) {
+//                        if (file.isFile()) {
+//                            String fileName = file.getName();
+//                            Matcher m = imagePattern.matcher(fileName);
+//                            if (m.matches()) {
+//                                listOfImages.add(file);
+//                            }
+//                        }
+//                    }
+//
+//
+//                    fileListView = new ListView<>(listOfImages);
+//
+//                }
+//        );
 
         primaryStage.setTitle("Viewing the image");
         Parent root = initInterface();
@@ -81,10 +106,11 @@ public class ImageViewer extends Application{
 
     private Parent initInterface() {
         SplitPane root = new SplitPane();
-        File imagePackage = new File("./files/images");
+        pacNameField = new TextField("./files/images");
+        imagePackageFile = new File(pacNameField.getText());
         ObservableList<File> listOfImages = FXCollections.observableArrayList();
         Pattern imagePattern = Pattern.compile(".+\\.(jpeg|jpg|gif|png|bmp|wbmp)");
-        for (File file : imagePackage.listFiles()) {
+        for (File file : Objects.requireNonNull(imagePackageFile.listFiles())) {
             if (file.isFile()) {
                 String fileName = file.getName();
                 Matcher m = imagePattern.matcher(fileName);
@@ -103,7 +129,6 @@ public class ImageViewer extends Application{
         ));
 
         search = new HBox();
-        tf = new TextField();
         button = new Button("Обзор");
 
         bg = new Pane();
@@ -111,13 +136,13 @@ public class ImageViewer extends Application{
 
         fileListView.setMinWidth(200);
 
-        HBox.setHgrow(tf, Priority.ALWAYS);
-        tf.setMinWidth(200);
+        HBox.setHgrow(pacNameField, Priority.ALWAYS);
+        pacNameField.setMinWidth(200);
         button.setMinWidth(80);
 
         root.getItems().addAll(fileListView, right);
         right.getChildren().addAll(search, bg);
-        search.getChildren().addAll(tf, button);
+        search.getChildren().addAll(pacNameField, button);
         bg.getChildren().addAll(image);
         return root;
     }
@@ -136,26 +161,30 @@ public class ImageViewer extends Application{
 
         //Изменение того, как будет отображаться листвью картиночек
         fileListView.setCellFactory(
-                (lv) -> new ListCell<File>() {
-                    @Override
-                    protected void updateItem(File item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty){
-                            setText("");
-                        }
-                        else {
-                            setText(item.getName());
-                            try {
-                                ImageView pic = new ImageView(new Image(item.toURI().toURL().toExternalForm()));
-                                pic.setFitWidth(64);
-                                pic.setFitHeight(64);
-                                setGraphic(pic);
-                            } catch (MalformedURLException e) {
-                                e.printStackTrace();
-                            }
+            (lv) -> new ListCell<File>() {
+                @Override
+                protected void updateItem(File item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty){
+                        setText("");
+                    }
+                    else {
+                        setText(item.getName());
+                        try {
+                            ImageView pic = new ImageView(new Image(item.toURI().toURL().toExternalForm()));
+                            pic.setFitWidth(64);
+                            pic.setFitHeight(64);
+                            setGraphic(pic);
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
+            }
         );
+
+        //Свяжу каталог с текстфилдом
+//        pacNameField = new TextField("./files/images");
+//        imagePackageFile = new File(pacNameField.getText());
     }
 }
