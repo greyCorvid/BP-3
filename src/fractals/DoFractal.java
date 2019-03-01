@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
@@ -21,6 +23,9 @@ public class DoFractal extends Application{
     private static int wiH;
     private static ImageView iv;
     private static VBox root;
+    private double x0;
+    private double y0;
+    private double dx;
 
     @Override
     public void start(Stage primaryStage) {
@@ -34,7 +39,7 @@ public class DoFractal extends Application{
         initInteraction();
         primaryStage.show();
 
-        //TODO изменение размера окна
+        //Изменение размера окна
         primaryStage.widthProperty().addListener(
                 prop -> {
                     wiW = (int) primaryStage.getWidth();
@@ -47,6 +52,10 @@ public class DoFractal extends Application{
                     pasteNewImage();
                 }
         );
+
+        //Изменение всякого при нажатии клавиши
+        primaryStage.addEventHandler(KeyEvent.KEY_PRESSED,
+                event -> change(event.getCode()));
     }
 
     private Parent initInterface() {
@@ -78,19 +87,10 @@ public class DoFractal extends Application{
 
         f = new MandelbrotFractal();
         p = new HsbPalette();
-        drawOnAllPixels(f, p, wi, -0.6, 0.6, 6./20000);
-
-
-
-
-        //TODO Добавить движение стрелочками
-        //При нажатии на стрелочку налево сдвигаем x0 на 1/4 картинки,
-            // это 100 пикселей в 400 картинке,100 пикселей именно в dx
-
-
-        //TODO Масштаб
-        //Умножение dx в полтора раза при приближении
-
+        x0 = -0.6;
+        y0 = 0.6;
+        dx = 6./20000;
+        drawOnAllPixels(f, p, wi, x0, y0, dx);
     }
 
     private static void drawOnAllPixels(Fractal fractal, Palette palette, WritableImage wi, double x0, double y0, double dx) {
@@ -109,11 +109,40 @@ public class DoFractal extends Application{
         }
     }
 
-    private static void pasteNewImage() {
+    private void pasteNewImage() {
+        //Случается чисто при изменении размера окна
         wi = new WritableImage(wiW, wiH);
-        iv = new ImageView(wi);
-        root.getChildren().removeAll();
-        root.getChildren().add(iv);
-        drawOnAllPixels(f, p, wi, -0.6, 0.6, 6./20000);
+        iv.setImage(wi);
+        drawOnAllPixels(f, p, wi, x0, y0, dx);
+    }
+
+    private void change(KeyCode pressedKey) {
+        double fourthW = wi.getWidth() / 4;
+        double fourthH = wi.getHeight() / 4;
+        switch(pressedKey) {
+            case UP:
+                y0 = y0 + fourthH * dx;
+                break;
+            case DOWN:
+                y0 = y0 - fourthH * dx;
+                break;
+            case LEFT:
+                x0 = x0 - fourthW * dx;
+                break;
+            case RIGHT:
+                x0 = x0 + fourthW * dx;
+                break;
+            case ADD:
+                x0 = x0 + 0.5 * wi.getWidth() * (dx - dx / 1.5);
+                y0 = y0 - 0.5 * wi.getHeight() * (dx - dx / 1.5);
+                dx = dx / 1.5;
+                break;
+            case SUBTRACT:
+                x0 = x0 + 0.5 * wi.getWidth() * (dx - dx * 1.5);
+                y0 = y0 - 0.5 * wi.getHeight() * (dx - dx * 1.5);
+                dx = dx * 1.5;
+                break;
+        }
+        drawOnAllPixels(f, p, wi, x0, y0, dx);
     }
 }

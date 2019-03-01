@@ -9,17 +9,25 @@ public class MandelbrotFractal implements Fractal {
         //z = a + bi
         double a = 0;
         double b = 0;
-        int ii = N;
         for (int i = 0; i <= N; i++) {
             double tempa = a*a-b*b;
             double tempb = a*b+a*b;
             a = tempa + x;
             b = tempb + y;
-            if (Math.sqrt(a*a + b*b) > R) {
-                ii = i;
-                break;
+//            Старый вариант без сглаживания
+//            if (Math.sqrt(a*a + b*b) > R) {
+//                ii = i;
+//                break;
+//            }
+//            Вот со сглаживаем штука вместо
+            double abs2 = a * a + b * b;
+            if (abs2 > R * R) {
+                double fix = Math.log(Math.log(abs2) / Math.log(R) / 2) / Math.log(2);
+                return (i - fix) / N;
             }
         }
-        return (double)ii/N;
+//        Тоже перед сглаживанием
+//        return (double)ii/N;
+        return 1;
     }
 }
