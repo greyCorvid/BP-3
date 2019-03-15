@@ -1,6 +1,7 @@
 package fractals;
 
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
@@ -10,22 +11,24 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class DoFractal extends Application{
 
-    private static WritableImage wi;
+    //TODO Красивую палитру + переключение палитр
     private static Fractal f;
     private static Palette p;
     private static int wiW;
     private static int wiH;
     private static ImageView iv;
-    private static VBox root;
     private double x0;
     private double y0;
     private double dx;
+    private static Task<WritableImage> task = null; //Это уже для рисования потоком
+    private Pane root;
 
     @Override
     public void start(Stage primaryStage) {
@@ -34,7 +37,7 @@ public class DoFractal extends Application{
         primaryStage.setMinHeight(400);
 
         primaryStage.setTitle("Fractals!!!");
-        Parent root = initInterface();
+        root = initInterface();
         primaryStage.setScene(new Scene(root));
         initInteraction();
         primaryStage.show();
@@ -58,17 +61,16 @@ public class DoFractal extends Application{
                 event -> change(event.getCode()));
     }
 
-    private Parent initInterface() {
-        root = new VBox();
+    private Pane initInterface() {
         wiW = 400;
         wiH = 400;
-        wi = new WritableImage(wiW, wiH);
-        iv = new ImageView(wi);
+        iv = new ImageView();
 
+        Pane root = new Pane(iv);
         root.setBackground(new Background(
                 new BackgroundFill(Color.BLANCHEDALMOND, null, null)
         ));
-        root.getChildren().add(iv);
+//        root.getChildren().add(iv);
         return root;
     }
 
@@ -90,35 +92,69 @@ public class DoFractal extends Application{
         x0 = -0.6;
         y0 = 0.6;
         dx = 6./20000;
-        drawOnAllPixels(f, p, wi, x0, y0, dx);
+        drawOnAllPixels(f, p, x0, y0, dx);
     }
 
-    private static void drawOnAllPixels(Fractal fractal, Palette palette, WritableImage wi, double x0, double y0, double dx) {
-        PixelWriter pw = wi.getPixelWriter();
-        //x0, y0 - координаты верхнего левого угла картинки в математической системе.
-        //x1, y1 - координаты по wi
-        //dx - размер пикселя в мат. системе
-        for (int x1 = 0; x1 < wi.getWidth(); x1++) {
-            for (int y1 = 0; y1 < wi.getHeight(); y1++) {
-                double x = x0 + x1*dx;
-                double y = y0 - y1*dx;
-                double colorInd = fractal.getColorIndex(x, y);
-                Color color = palette.getColor(colorInd);
-                pw.setColor(x1,y1,color);
+    private void drawOnAllPixels(Fractal fractal, Palette palette, double x0, double y0, double dx) { //TODO убрать x0, y0, dx
+        if (task != null)
+            task.cancel();
+
+        Task<WritableImage> t = new Task<WritableImage>() {
+            @Override
+            protected WritableImage call() {
+                int width = (int)root.getWidth();
+                int height = (int)root.getWidth();
+
+                if (width == 0 || height == 0)
+                    return null;
+
+                WritableImage wi = new WritableImage(width, height);
+                if (task.isCancelled())
+                    return null;
+                PixelWriter pw = wi.getPixelWriter();
+                //x0, y0 - координаты верхнего левого угла картинки в математической системе.
+                //x1, y1 - координаты по wi
+                //dx - размер пикселя в мат. системе
+                for (int x1 = 0; x1 < width; x1++) {
+                    for (int y1 = 0; y1 < height; y1++) {
+                        double x = x0 + x1*dx;
+                        double y = y0 - y1*dx;
+                        double colorInd = fractal.getColorIndex(x, y);
+                        Color color = palette.getColor(colorInd);
+                        pw.setColor(x1,y1,color);
+                    }
+                    updateValue(
+                            new WritableImage(wi.getPixelReader(), width, height)
+                    );
+                    if (isCancelled()) {
+                        System.out.println("cancelled");
+                        return null;
+                    }
+                }
+                return wi;
             }
-        }
+        };
+        //TODO
+        t.valueProperty().addListener(
+                prop -> iv.setImage(t.getValue())
+        );
+        new Thread(t).start();
+        System.out.println("New task started");
+        task = t;
+        t.setOnSucceeded(
+                a -> task = null
+        );
     }
 
     private void pasteNewImage() {
         //Случается чисто при изменении размера окна
-        wi = new WritableImage(wiW, wiH);
-        iv.setImage(wi);
-        drawOnAllPixels(f, p, wi, x0, y0, dx);
+        drawOnAllPixels(f, p, x0, y0, dx);
     }
 
     private void change(KeyCode pressedKey) {
-        double fourthW = wi.getWidth() / 4;
-        double fourthH = wi.getHeight() / 4;
+        //Всякие пользовательские изменения
+        double fourthW = root.getWidth() / 4;
+        double fourthH = root.getHeight() / 4;
         switch(pressedKey) {
             case UP:
                 y0 = y0 + fourthH * dx;
@@ -133,16 +169,16 @@ public class DoFractal extends Application{
                 x0 = x0 + fourthW * dx;
                 break;
             case ADD:
-                x0 = x0 + 0.5 * wi.getWidth() * (dx - dx / 1.5);
-                y0 = y0 - 0.5 * wi.getHeight() * (dx - dx / 1.5);
+                x0 = x0 + 0.5 * root.getWidth() * (dx - dx / 1.5);
+                y0 = y0 - 0.5 * root.getHeight() * (dx - dx / 1.5);
                 dx = dx / 1.5;
                 break;
             case SUBTRACT:
-                x0 = x0 + 0.5 * wi.getWidth() * (dx - dx * 1.5);
-                y0 = y0 - 0.5 * wi.getHeight() * (dx - dx * 1.5);
+                x0 = x0 + 0.5 * root.getWidth() * (dx - dx * 1.5);
+                y0 = y0 - 0.5 * root.getHeight() * (dx - dx * 1.5);
                 dx = dx * 1.5;
                 break;
         }
-        drawOnAllPixels(f, p, wi, x0, y0, dx);
+        drawOnAllPixels(f, p, x0, y0, dx);
     }
 }
