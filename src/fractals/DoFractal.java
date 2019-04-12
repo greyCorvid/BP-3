@@ -2,7 +2,6 @@ package fractals;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -12,7 +11,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -21,8 +19,6 @@ public class DoFractal extends Application{
     //TODO Красивую палитру + переключение палитр
     private static Fractal f;
     private static Palette p;
-    private static int wiW;
-    private static int wiH;
     private static ImageView iv;
     private double x0;
     private double y0;
@@ -45,13 +41,13 @@ public class DoFractal extends Application{
         //Изменение размера окна
         primaryStage.widthProperty().addListener(
                 prop -> {
-                    wiW = (int) primaryStage.getWidth();
+                    primaryStage.getWidth();
                     pasteNewImage();
                 }
         );
         primaryStage.heightProperty().addListener(
                 prop -> {
-                    wiH = (int) primaryStage.getHeight();
+                    primaryStage.getHeight();
                     pasteNewImage();
                 }
         );
@@ -62,8 +58,6 @@ public class DoFractal extends Application{
     }
 
     private Pane initInterface() {
-        wiW = 400;
-        wiH = 400;
         iv = new ImageView();
 
         Pane root = new Pane(iv);
@@ -92,10 +86,10 @@ public class DoFractal extends Application{
         x0 = -0.6;
         y0 = 0.6;
         dx = 6./20000;
-        drawOnAllPixels(f, p, x0, y0, dx);
+        drawOnAllPixels(f, p);
     }
 
-    private void drawOnAllPixels(Fractal fractal, Palette palette, double x0, double y0, double dx) { //TODO убрать x0, y0, dx
+    private void drawOnAllPixels(Fractal fractal, Palette palette) {
         if (task != null)
             task.cancel();
 
@@ -148,7 +142,7 @@ public class DoFractal extends Application{
 
     private void pasteNewImage() {
         //Случается чисто при изменении размера окна
-        drawOnAllPixels(f, p, x0, y0, dx);
+        drawOnAllPixels(f, p);
     }
 
     private void change(KeyCode pressedKey) {
@@ -179,6 +173,6 @@ public class DoFractal extends Application{
                 dx = dx * 1.5;
                 break;
         }
-        drawOnAllPixels(f, p, x0, y0, dx);
+        drawOnAllPixels(f, p);
     }
 }
