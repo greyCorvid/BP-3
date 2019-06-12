@@ -10,11 +10,11 @@ import java.util.Scanner;
 
 public class Settings {
     private static Settings instance = new Settings();
-    private static int width;
-    private static int height;
-    private static String randSeed;
-    private static String background;
-    private static Properties p;
+    private int width;
+    private int height;
+    private String randSeed;
+    private String background;
+    private Properties p;
 
     public static Settings getInstance() {
         return instance;
@@ -36,26 +36,29 @@ public class Settings {
         background = p.getProperty("background", "#FFFFFF");
     }
 
-    public static int getWidth() {
+    public int getWidth() {
         return width;
     }
 
-    public static int getHeight() {
+    public int getHeight() {
         return height;
     }
 
-    public static String getBackground() {
+    public String getBackground() {
         return background;
     }
 
-    public static int getRandSeed() {
+    public int getRandSeed() {
         if (randSeed.equals("auto"))
             randSeed = "0";
         return Integer.parseInt(randSeed);
     }
 
-    public static String getShapeDescription(String shapeName) {
+    public String getShapeDescription(String shapeName) {
         //получает "red_circle", даёт "svg.shape.RedCircle", оно как раз после shape.инпут=
+        System.out.println(Integer.parseInt(p.getProperty("height", "500")));
+        System.out.println(p.getProperty("shape." + shapeName));
+        System.out.println("b");
         return p.getProperty("shape." + shapeName);
     }
 }

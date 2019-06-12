@@ -1,9 +1,7 @@
 package svg;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Random;
-import java.util.Scanner;
 
 public class DoingSVG {
     public static void main(String[] args) {
@@ -30,7 +28,7 @@ public class DoingSVG {
 
         task7("LotsOfShapes.svg");
         taskSettings("ShapesFromSettings.svg");
-//        System.out.println(Settings.getShapeDescription("red_circle"));
+        System.out.println(Settings.getInstance().getShapeDescription("red_circle"));
     }
 
     private static void task2(String SVGFileString) {
@@ -105,16 +103,16 @@ public class DoingSVG {
         Tag bg = new Tag("rect", TagType.OPEN_AND_CLOSE);
         bg.set("x", "0");
         bg.set("y", "0");
-        bg.set("height", String.valueOf(Settings.getHeight()));
-        bg.set("width", String.valueOf(Settings.getWidth()));
-        bg.set("style", "stroke:#ff0000; fill: " + Settings.getBackground());
+        bg.set("height", String.valueOf(Settings.getInstance().getHeight()));
+        bg.set("width", String.valueOf(Settings.getInstance().getWidth()));
+        bg.set("style", "stroke:#ff0000; fill: " + Settings.getInstance().getBackground());
         //creating svg
-        try (SVG svg = new SVG(SVGFileString, Settings.getWidth(), Settings.getHeight())){
+        try (SVG svg = new SVG(SVGFileString, Settings.getInstance().getWidth(), Settings.getInstance().getHeight())){
             //drawing background
             svg.addTag(bg);
             //drawing shapes
             //implementing getting randSeed from Settings to customize random
-            int randSeed = Settings.getRandSeed();
+            int randSeed = Settings.getInstance().getRandSeed();
             Random random = new Random();
             if (randSeed != 0) {
                 random = new Random(randSeed);
