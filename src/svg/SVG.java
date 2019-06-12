@@ -26,11 +26,25 @@ public class SVG implements AutoCloseable{
 
     public void addTag(Tag tag) {
         //Берем тег и все его атрибуты и записываем по синтаксису всё
-        out.print("    <" + tag.tagName);
-        tag.attributes.forEach(
-                (attribute, value) -> out.print(" " + attribute + "=\"" + value + "\"")
-        );
-        out.println("/>");
+        switch (tag.typeOfTag) {
+            case OPEN:
+                out.print("    <" + tag.tagName);
+                tag.attributes.forEach(
+                        (attribute, value) -> out.print(" " + attribute + "=\"" + value + "\"")
+                );
+                out.println(">");
+                break;
+            case CLOSE:
+                out.println("</" + tag.tagName + ">");
+                break;
+            case OPEN_AND_CLOSE:
+                out.print("    <" + tag.tagName);
+                tag.attributes.forEach(
+                        (attribute, value) -> out.print(" " + attribute + "=\"" + value + "\"")
+                );
+                out.println("/>");
+                break;
+        }
     }
 
     @Override

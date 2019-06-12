@@ -16,9 +16,11 @@ public class Tag {
     //чтобы иметь возможность потом это всё написать красиво текстом
     public String tagName;
     public Map<String, String> attributes;
+    public TagType typeOfTag;
 
-    public Tag(String tagName) {
+    public Tag(String tagName, TagType typeOfTag) {
         this.tagName = tagName;
+        this.typeOfTag = typeOfTag;
         attributes = new HashMap<>();
     }
 
