@@ -59,6 +59,7 @@ public class Settings {
         System.out.println(Integer.parseInt(p.getProperty("height", "500")));
         System.out.println(p.getProperty("shape." + shapeName));
         System.out.println("b");
+        System.out.println(p);
         return p.getProperty("shape." + shapeName);
     }
 }

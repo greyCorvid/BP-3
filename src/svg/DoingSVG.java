@@ -1,7 +1,9 @@
 package svg;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Random;
+import java.util.Scanner;
 
 public class DoingSVG {
     public static void main(String[] args) {
