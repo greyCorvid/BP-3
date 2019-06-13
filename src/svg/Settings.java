@@ -5,8 +5,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Settings {
     private static Settings instance = new Settings();
@@ -21,7 +24,7 @@ public class Settings {
     }
 
     private Settings() {
-        Properties p = new Properties();
+        p = new Properties();
         try {
             p.load(new InputStreamReader(
                     new FileInputStream("svg.properties"),
@@ -55,11 +58,15 @@ public class Settings {
     }
 
     public String getShapeDescription(String shapeName) {
-        //получает "red_circle", даёт "svg.shape.RedCircle", оно как раз после shape.инпут=
-        System.out.println(Integer.parseInt(p.getProperty("height", "500")));
-        System.out.println(p.getProperty("shape." + shapeName));
-        System.out.println("b");
-        System.out.println(p);
+        //получает "red_circle", даёт "svg.RedCircle", оно как раз после shape.инпут=
         return p.getProperty("shape." + shapeName);
+    }
+
+    public HashMap<String, Integer> getShapesWithCount() {
+        //from string draw=red_circle:150 small_square:100 return 150 for red_circle etc
+        String draw = p.getProperty("draw");
+        return (HashMap<String, Integer>) Arrays.stream(draw.split(" "))
+                .map(s -> s.split(":"))
+                .collect(Collectors.toMap(e -> e[0], e -> Integer.parseInt(e[1])));
     }
 }

@@ -2,6 +2,7 @@ package svg;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -30,7 +31,6 @@ public class DoingSVG {
 
         task7("LotsOfShapes.svg");
         taskSettings("ShapesFromSettings.svg");
-        System.out.println(Settings.getInstance().getShapeDescription("red_circle"));
     }
 
     private static void task2(String SVGFileString) {
@@ -105,28 +105,38 @@ public class DoingSVG {
         Tag bg = new Tag("rect", TagType.OPEN_AND_CLOSE);
         bg.set("x", "0");
         bg.set("y", "0");
-        bg.set("height", String.valueOf(Settings.getInstance().getHeight()));
-        bg.set("width", String.valueOf(Settings.getInstance().getWidth()));
+        Integer bgHeight = Settings.getInstance().getHeight();
+        bg.set("height", String.valueOf(bgHeight));
+        Integer bgWidth = Settings.getInstance().getWidth();
+        bg.set("width", String.valueOf(bgWidth));
         bg.set("style", "stroke:#ff0000; fill: " + Settings.getInstance().getBackground());
         //creating svg
         try (SVG svg = new SVG(SVGFileString, Settings.getInstance().getWidth(), Settings.getInstance().getHeight())){
             //drawing background
             svg.addTag(bg);
-            //drawing shapes
-            //implementing getting randSeed from Settings to customize random
+            //drawing shapes nowwww:
+            //implementing getting randSeed from Settings to customize random  of creating shapes
             int randSeed = Settings.getInstance().getRandSeed();
             Random random = new Random();
             if (randSeed != 0) {
                 random = new Random(randSeed);
             }
-            for (int i = 0; i < 100; i++) {
-                PositionedShape square = new PositionedShape(new SmallSquare(), random.nextInt(400), random.nextInt(400));
-                square.draw(svg);
-            }
 
-            for (int i = 0; i < 150; i++) {
-                PositionedShape circle = new PositionedShape(new RedCircle(), random.nextInt(400), random.nextInt(400));
-                circle.draw(svg);
+            ShapeFactory shapeFactory = new ShapeFactory();
+            HashMap<String, Integer> shapesToDraw = Settings.getInstance().getShapesWithCount();
+            for (HashMap.Entry<String, Integer> entry : shapesToDraw.entrySet()) {
+                String shapeName = entry.getKey();
+                Integer howMuch = entry.getValue();
+                for (int i = 0; i < howMuch; i++) {
+                    String shapeDescription = Settings.getInstance().getShapeDescription(shapeName);
+                    PositionedShape shapeToDraw = null;
+                    try {
+                        shapeToDraw = new PositionedShape(shapeFactory.create(shapeDescription), random.nextInt(bgWidth), random.nextInt(bgHeight));
+                    } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+                        e.printStackTrace();
+                    }
+                    shapeToDraw.draw(svg);
+                }
             }
         } catch (IOException e) {
             System.out.println("Ошибка создания SVG");
